@@ -1,0 +1,3 @@
+/// @desc
+
+function destroy() {}
