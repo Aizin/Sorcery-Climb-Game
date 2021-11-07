@@ -13,7 +13,7 @@ if (global.show_progress) {
 }
 
 if (global.show_timer) {
-	draw_text(CX+10, yy, real_to_time(global.time));
+	draw_text(CX+10, yy, real_to_time(global.time, 0));
 	yy += string_height("A");
 }
 

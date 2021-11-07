@@ -1,13 +1,29 @@
 /// @desc
 
+levels = [rm_game_1, rm_game_2, rm_game_3, rm_game_4];
+
 active = true;
 
 state = 0;
 
+logo_alpha = 1;
+
 c1 = make_color_rgb(94, 0, 39);
 c2 = make_color_rgb(26, 0, 3);
 
+level_offset = 0;
+
+function switch_rooms() {
+	switch (cursor) {
+		case 1: change_room(rm_game_1); break;
+		case 2: change_room(rm_game_2); break;
+		case 3: change_room(rm_game_3); break;
+		case 4: change_room(rm_game_4); break;
+	}
+}
+
 cursor = 0;
+cursor_2 = 0;
 options = [];
 function add_option(name, func=function(){}) {
 	var o = new option(name, func);
@@ -60,6 +76,7 @@ add_option("Quit", function() {
 	with (instance_create_depth(0,0,-10000,obj_confirm_modal)) {
 		controller = other;
 		yes_func = function() {
+			save_game();
 			game_end();
 		}
 		no_func = function() {

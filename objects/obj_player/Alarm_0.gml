@@ -1,7 +1,12 @@
 /// @desc
 
+var fader_spr = sprite_index;
+if (blue) {
+	fader_spr = get_sprite_blue();
+}
+
 with (instance_create_depth(x, y, depth+1, obj_sprite_fader)) {
-	sprite_index = other.sprite_index;
+	sprite_index = fader_spr;
 	image_index = other.image_index;
 	image_alpha = 0.5 - (other.sprite_fader_count_default - other.sprite_fader_count)*0.1;
 	image_xscale = other.image_xscale * other.xscale;
@@ -14,9 +19,15 @@ repeat(irandom_range(2,3)) {
 	with (instance_create_depth(x + random_range(-3, 3), y + random_range(-3, 3), depth-10, obj_particle_basic)) {
 		
 		if (other.part_color == -1) {
-			color = merge_color(make_color_rgb(227, 27, 72), choose(c_white, c_purple, c_blue), choose(random(0.1), random(0.2), random(0.45)));
-		} else {
+			if (other.blue) {
+				color = choose(make_color_rgb(0,122,255), make_color_rgb(0, 57, 135));
+			} else {
+				color = merge_color(make_color_rgb(227, 27, 72), choose(c_white, c_purple, c_blue), choose(random(0.1), random(0.2), random(0.45)));
+			}
+		} else if (other.part_color == c_green) {
 			color = choose(make_color_rgb(9,153,17), make_color_rgb(48, 221, 93), make_color_rgb(136, 251, 155))
+		} else {
+			color = choose(make_color_rgb(0,122,255), make_color_rgb(0, 57, 135));
 		}
 		
 		alpha_decay = 0.03;

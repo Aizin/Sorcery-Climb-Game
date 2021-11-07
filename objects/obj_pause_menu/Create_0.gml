@@ -3,7 +3,7 @@
 
 cursor_active = true;
 
-height = global.CH_default - 16;
+height = global.CH_default - 8;
 width = height;
 
 x = CX + CW/2 - width/2;
@@ -32,6 +32,29 @@ function add_option_toggle(name, global_var_) {
 			reset_name();
 			
 			variable_global_set(global_var, toggle);
+		}
+		
+		reset_name = function() {
+			var check = toggle ? "X" : "  ";
+			name = name_save + " [" + check + "]";
+		}
+		
+		reset_name();
+	}
+}
+function add_option_toggle_func(name, default_val, func_) {
+	var o = add_option(name);
+	with (o) {
+		name_save = name;
+		func = func_;
+		
+		toggle = default_val;
+		
+		press = function() {
+			toggle = !toggle;
+			reset_name();
+			
+			func(toggle);
 		}
 		
 		reset_name = function() {
@@ -119,11 +142,26 @@ add_option_slider("Music", ag_music, function(val){});
 add_option_slider("Sound", ag_sounds, function(val){});
 add_option_slider("Master", -1 , function(val){});
 add_option("")
-	.set_height(8);
+	.set_height(4);
 add_option_toggle("Show Progress", "show_progress")
 add_option_toggle("Show Timer", "show_timer")
+add_option_toggle_func("Fullscreen", global.fullscreen, function(t) {
+	if (t) {
+		global.fullscreen = true;
+	} else {
+		global.fullscreen = false;
+	}
+	window_set_fullscreen(global.fullscreen);
+})
+add_option_toggle_func("Controller Rumble", global.controller_rumble, function(t) {
+	if (t) {
+		global.controller_rumble = 1;
+	} else {
+		global.controller_rumble = 0;
+	}
+})
 add_option("")
-	.set_height(8);
+	.set_height(4);
 	
 init = false;
 
@@ -133,6 +171,7 @@ function extra_options() {
 			controller = other;
 			yes_func = function() {
 				change_room(room);
+				reset_save_vars(get_room_index());
 			}
 			no_func = function() {
 				if (instance_exists(controller)) {
@@ -149,6 +188,7 @@ function extra_options() {
 			controller = other;
 			yes_func = function() {
 				change_room(rm_menu);
+				save_game();
 			}
 			no_func = function() {
 				if (instance_exists(controller)) {

@@ -1,7 +1,29 @@
 /// @desc
 
+#macro LEVEL_COUNT 4
+
+global.time = 0;
+
+global.best_time		= array_create(LEVEL_COUNT, -1);
+global.current_progress = array_create(LEVEL_COUNT, 0);
+global.current_time		= array_create(LEVEL_COUNT, 0);
+global.current_position = array_create(LEVEL_COUNT, array_create(2, -1));
+global.level_completion = array_create(LEVEL_COUNT, false);
+
+global.statistics_jumps    = array_create(LEVEL_COUNT, 0);
+global.statistics_dashs    = array_create(LEVEL_COUNT, 0);
+global.statistics_falls    = array_create(LEVEL_COUNT, 0);
+global.statistics_max_fall = array_create(LEVEL_COUNT, 0);
+
+load_file();
+
+// ################################################################
+
 surface_resize(application_surface, 320, 180);
 display_set_gui_maximize();
+
+global.fullscreen = 0;
+global.controller_rumble = 1;
 
 randomize();
 
@@ -16,14 +38,7 @@ ds_map_add(global.audio_gain, ag_sounds, 0.5);
 ds_map_add(global.audio_gain, ag_music, 0.5);
 ds_map_add(global.audio_gain, -1, 0.5);
 
-global.timer_active = true;
-global.time                = 0;
-global.statistics_jumps    = 0;
-global.statistics_dashs    = 0;
-global.statistics_falls    = 0;
-global.statistics_max_fall = 0;
-
-global.best_time = [-1, -1, -1];
+global.timer_active = false;
 
 global.music_soundid = -1;
 

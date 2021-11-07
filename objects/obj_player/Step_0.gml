@@ -19,6 +19,7 @@ yscale = lerp(yscale, 1, 0.2);
 if (instance_exists(obj_door)) {
 	if (global.key_up_pressed && place_meeting(x, y, obj_door)) {
 		global.can_pause = false;
+		global.timer_active = 0;
 		
 		var d = instance_place(x,y,obj_door);
 		instance_destroy();
@@ -37,3 +38,4 @@ if (instance_exists(obj_door)) {
 dash_alpha = approach(dash_alpha, dashing ? 0.12 : 0, 0.02);
 horizontal_lock = approach(horizontal_lock, 0, 1);
 
+blue_alpha = approach(blue_alpha, blue, 0.08);

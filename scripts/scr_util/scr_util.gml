@@ -2,7 +2,8 @@ function approach(val, goal, step) {
 	return val < goal ? min(val + step, goal) : max(val - step, goal);
 }
 
-function real_to_time(val) {
+function real_to_time(val, mili=true) {
+
 	var mins = 0;
 	var secs = 0;
 	
@@ -11,6 +12,10 @@ function real_to_time(val) {
 		mins ++;
 	}
 	secs = val;
+	
+	if(!mili) {
+		secs = floor(secs);
+	}
 	
 	mins = string(mins);
 	

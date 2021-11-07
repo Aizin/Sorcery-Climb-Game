@@ -1,8 +1,18 @@
 /// @desc
 
+rm_index = get_room_index();
+if (global.current_position[rm_index, 0] != -1) {
+	x = global.current_position[rm_index, 0];
+}
+if (global.current_position[rm_index, 1] != -1) {
+	y = global.current_position[rm_index, 1];
+}
+
 dash_alpha = 0;
 dash_c1 = make_color_rgb(255, 58, 162);
 dash_c2 = make_color_rgb(169, 16, 177);
+dash_c1_blue = make_color_rgb(0, 122, 255);
+dash_c2_blue = make_color_rgb(0, 54, 153);
 
 horizontal_lock = 0;
 
@@ -22,6 +32,9 @@ repeat (2) {
 		}
 	}
 }
+
+blue = false;
+blue_alpha = 0;
 
 surf = -1;
 
@@ -69,6 +82,9 @@ debug_movement = false;
 can_dash = false;
 
 touching_gem = false;
+touching_gem_blue = false;
+
+blue_grounded = false;
 
 function process_movement() {
 	
@@ -88,10 +104,12 @@ function process_movement() {
 		if (global.key_right) {
 			hsp = approach(hsp, spd, fric);
 			dir = 1;
+			global.timer_active = 1;
 		}
 		if (global.key_left) {
 			hsp = approach(hsp, -spd, fric);
 			dir = -1;
+			global.timer_active = 1;
 		}
 		if (xaxis == 0) {
 			hsp = approach(hsp, 0, fric);
@@ -105,11 +123,31 @@ function process_movement() {
 		
 		jump_buffer = jump_buffer_timer;
 		
+		
+		
+		
 		var w = instance_place(x,y+1,obj_wall);
 		if (w.slope) {
 			dashing = true;
 		} else {
 			dashing = false;
+		}
+		
+		if (!dashing && blue && !blue_grounded) {
+			vsp = -jump_spd * 3/2;
+			hsp = hsp/1.5 + dir;
+			dashing = true;
+			movement_pause = dashing_pause*2;
+			xscale = 1.5;
+			yscale = 0.5;
+			horizontal_lock = 10;
+			blue_grounded = true;
+		}
+		
+		if (!dashing) {
+			global.current_position[rm_index, 0] = x;
+			global.current_position[rm_index, 1] = y;
+			global.current_progress[rm_index] = get_progress();
 		}
 		
 	} else {
@@ -129,7 +167,7 @@ function process_movement() {
 			can_dash = true;
 			if (global.key_dash_pressed) {
 				
-				global.statistics_dashs ++;
+				global.statistics_dashs[rm_index] ++;
 				
 				dashing = true;
 				dash_alpha = 0.6;
@@ -142,8 +180,6 @@ function process_movement() {
 				yscale = 1.5;
 				
 				part_color = -1;
-				
-				//instance_create_depth(x, y, depth+1, obj_dash_orb);
 			}
 		}
 		
@@ -163,6 +199,9 @@ function process_movement() {
 					
 					xscale = 0.5;
 					yscale = 1.5;
+					
+					shake_camera(2);
+					rumble(0.2);
 					
 					if (g.refill) {
 						dashing = false;
@@ -184,15 +223,57 @@ function process_movement() {
 			}
 		}
 		
+		if (instance_exists(obj_gem_blue)) {
+			if (place_meeting(x,y,obj_gem_blue)) {
+				var g = instance_place(x,y,obj_gem_blue);
+				if (!touching_gem_blue) {
+					shake_camera(2);
+					rumble(0.2);
+					
+					touching_gem_blue = true;
+					blue = true;
+					play_sound(snd_gem_blue);
+					
+					repeat (10) {
+						var angle = random_range(0, 360);
+						var xx = 5 * dcos(angle);
+						var yy = 5 * -dsin(angle);
+						with (instance_create_depth(g.x+xx, g.y+yy, depth-10, obj_particle_basic)) {
+							var spd_ = 1.5;
+							hsp = spd_ * dcos(angle);
+							vsp = spd_ * -dsin(angle);
+			
+							alpha_decay = 0.1;
+				
+							step_frequency = (other.movement_pause/other.dashing_pause)*3+1;
+							color = make_color_rgb(0, 166, 255);
+				
+							var l = instance_create_layer(x,y,"Lighting",obj_moving_light);
+							l.follow = self;
+							l.color = color;
+							l.size = 2
+							with (l) {
+								step = function() {
+									str -= 0.3;
+								}
+							}
+						}
+					}
+				}
+			} else {
+				touching_gem_blue = false;
+			}
+		}
+		
 		jump_buffer = approach(jump_buffer, 0, 1);
 	}
 	
 	
-	if (!dashing) {
+	if (!dashing && !blue_grounded) {
 		if (global.key_jump_pressed && jump_buffer != 0) {
 			vsp = -jump_spd;
 			
-			global.statistics_jumps ++;
+			global.statistics_jumps[rm_index] ++;
 			
 			jump_buffer = 0;
 			
@@ -200,6 +281,8 @@ function process_movement() {
 			yscale = 1.5;
 			
 			play_sound(snd_jump);
+			
+			global.timer_active = 1;
 		}
 		
 		
@@ -221,6 +304,22 @@ function process_movement() {
 			rumble(0.8);
 			
 			alarm_set(0, sprite_fader_spacing);
+		}
+		
+		if (blue_grounded) {
+			blue = false;
+			blue_grounded = false;
+			
+			alarm_set(0, sprite_fader_spacing);
+			
+			part_color = c_blue;
+			
+			play_sound(snd_blue_jump);
+						
+			alarm_set(2, 50);
+			
+			shake_camera(3);
+			rumble(0.5);
 		}
 	} else {
 		movement_pause = approach(movement_pause, 0, 1);
@@ -417,7 +516,7 @@ function process_collision() {
 						hsp = sign(hsp);
 						alarm_set(1, down_timer);
 						
-						global.statistics_falls ++;
+						global.statistics_falls[rm_index] ++;
 						
 						sound_set_gain(s, 1, 0);
 						
@@ -432,7 +531,7 @@ function process_collision() {
 							with (instance_create_layer(x, y, "Game", obj_progress_indicator)) {
 								var diff = abs(other.progress_previous - get_progress());
 								value = diff;
-								global.statistics_max_fall = max(global.statistics_max_fall, diff);
+								global.statistics_max_fall[other.rm_index] = max(global.statistics_max_fall[other.rm_index], diff);
 							}
 						}
 						shake_camera(random_range(2,3));
@@ -493,4 +592,16 @@ function create_dash_particles(min_=3, max_=6, size=1) {
 	}
 	
 	
+}
+
+function get_sprite_blue() {
+	var b_spr = -1;
+	switch (sprite_index) {
+		case spr_player_idle: b_spr = spr_player_idle_blue; break;
+		case spr_player_walk: b_spr = spr_player_walk_blue; break;
+		case spr_player_jump: b_spr = spr_player_jump_blue; break;
+		case spr_player_fall: b_spr = spr_player_fall_blue; break;
+		case spr_player_down: b_spr = spr_player_down_blue; break;
+	}
+	return b_spr;
 }

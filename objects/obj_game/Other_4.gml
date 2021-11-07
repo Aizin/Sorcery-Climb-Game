@@ -1,13 +1,9 @@
 /// @desc
 
 
-global.time                = 0;
-global.statistics_jumps    = 0;
-global.statistics_dashs    = 0;
-global.statistics_falls    = 0;
-global.statistics_max_fall = 0;
+global.time = global.current_time[get_room_index()];
 
-global.timer_active = 1;
+global.timer_active = 0;
 global.can_pause = 1;
 global.game_paused = 0;
 

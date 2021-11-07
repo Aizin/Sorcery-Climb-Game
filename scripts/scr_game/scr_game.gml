@@ -39,8 +39,6 @@ function unpause_game() {
 }
 
 function pause_game() {
-	
-	
 	if (!instance_exists(obj_pause_menu)){
 		global.game_paused = true;
 		global.timer_active = false;
@@ -57,4 +55,14 @@ function toggle_pause() {
 		pause_game();
 		return 1;
 	}
+}
+
+function get_room_index() {
+	switch (room) {
+		case rm_game_1: return 0; break;
+		case rm_game_2: return 1; break;
+		case rm_game_3: return 2; break;
+		case rm_game_4: return 3; break;
+	}
+	return 0;
 }
