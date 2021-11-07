@@ -58,6 +58,7 @@ function save_game() {
 	global.current_time[get_room_index()] = global.time;
 	var root_struct = {
 		are_you_trying_to_cheat : "wow... can't even beat the game so you need to cheat......",
+		version: 1.1,
 		best_time: global.best_time,
 		current_progress: global.current_progress,
 		current_position: global.current_position,
