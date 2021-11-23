@@ -36,6 +36,7 @@
     {"id":{"name":"spr_player_door_enter","path":"sprites/spr_player_door_enter/spr_player_door_enter.yy",},"order":5,},
     {"id":{"name":"obj_room","path":"objects/obj_room/obj_room.yy",},"order":0,},
     {"id":{"name":"rm_game_2","path":"rooms/rm_game_2/rm_game_2.yy",},"order":3,},
+    {"id":{"name":"spr_gamepad_controls","path":"sprites/spr_gamepad_controls/spr_gamepad_controls.yy",},"order":13,},
     {"id":{"name":"spr_player_idle_blue","path":"sprites/spr_player_idle_blue/spr_player_idle_blue.yy",},"order":7,},
     {"id":{"name":"rm_game_4","path":"rooms/rm_game_4/rm_game_4.yy",},"order":5,},
     {"id":{"name":"snd_menu_cursor","path":"sounds/snd_menu_cursor/snd_menu_cursor.yy",},"order":0,},

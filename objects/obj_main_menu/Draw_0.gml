@@ -38,6 +38,14 @@ if (state == 0) {
 	
 	draw_text(2, room_height+2, "Version: 1.1");
 	
+	draw_set_halign(fa_right);
+	if (gamepad_is_connected(device_index)) {
+		draw_text(room_width-5, room_height-24, "Controls:\nD-pad  ");
+		draw_sprite(spr_gamepad_controls,0,room_width-26,room_height-16);
+	} else {
+		draw_text(room_width-4, room_height+2, "Controls: \nArrow Keys\nZ X      ");
+	}
+	
 	draw_set_valign(fa_top);
 	
 } else {
